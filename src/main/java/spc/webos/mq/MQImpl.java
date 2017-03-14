@@ -91,21 +91,23 @@ public class MQImpl implements MQ
 				(Integer) config.getProperty(Config.app_mq_msg_expire, false, MSG_EXPIRE), null);
 	}
 
-	public void snd(String queue, String method, String callback, String args)
+	public void snd(String queue, String method, String resQ, String callback, String args)
 	{
-		send(queue, null, null, method, defResQ, callback, args,
+		send(queue, null, null, method, StringX.nullity(resQ) ? defResQ : resQ, callback, args,
 				(Integer) config.getProperty(Config.app_mq_msg_expire, false, MSG_EXPIRE), null);
 	}
 
-	public void sndList(String queue, String method, String callback, List<Object> args)
+	public void sndList(String queue, String method, String resQ, String callback,
+			List<Object> args)
 	{
-		send(queue, null, null, method, defResQ, callback, args,
+		send(queue, null, null, method, StringX.nullity(resQ) ? defResQ : resQ, callback, args,
 				(Integer) config.getProperty(Config.app_mq_msg_expire, false, MSG_EXPIRE), null);
 	}
 
-	public void sndMap(String queue, String method, String callback, Map<String, Object> args)
+	public void sndMap(String queue, String method, String resQ, String callback,
+			Map<String, Object> args)
 	{
-		send(queue, null, null, method, defResQ, callback, args,
+		send(queue, null, null, method, StringX.nullity(resQ) ? defResQ : resQ, callback, args,
 				(Integer) config.getProperty(Config.app_mq_msg_expire, false, MSG_EXPIRE), null);
 	}
 

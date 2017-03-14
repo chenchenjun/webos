@@ -35,12 +35,13 @@ public interface MQ
 
 	void noticeList(String queue, String method, List<Object> args) throws AppException;
 
-	void snd(String queue, String method, String callback, String args) throws AppException;
-
-	void sndMap(String queue, String method, String callback, Map<String, Object> args)
+	void snd(String queue, String method, String resQ, String callback, String args)
 			throws AppException;
 
-	void sndList(String queue, String method, String callback, List<Object> args)
+	void sndMap(String queue, String method, String resQ, String callback, Map<String, Object> args)
+			throws AppException;
+
+	void sndList(String queue, String method, String resQ, String callback, List<Object> args)
 			throws AppException;
 
 	void send(String queue, String sndAppCd, String sn, String method, String resQ, String callback,

@@ -27,16 +27,17 @@ public class JSCallMessageListener extends AbstractBytesMessageListener
 			log.debug("queue:{}, corId:{}, request:{}", queue, corId, request);
 			Map<String, Object> soap = (Map<String, Object>) JsonUtil.gson2obj(request);
 			Map<String, Object> header = (Map<String, Object>) soap.get(JsonUtil.TAG_HEADER);
-			String refSeqNb = (String) header.get(JsonUtil.TAG_HEADER_REFSNDSN);
 			if (this.request)
 			{ // 请求报文
-				log.info("MQ JS request:{},{}, len:{}", corId, queue, buf.length);
+				String replyToQ = (String) header.get(JsonUtil.TAG_HEADER_REPLYTOQ);
+				log.info("MQ JS request:{},{}, replyToQ:{}, len:{}", corId, queue, replyToQ,
+						buf.length);
 				doRequest((BytesMessage) msg, soap);
 			}
 			else
 			{ // 应答报文
 				log.info("MQ JS response:{},{}, len:{}, refSeqNb:{}", corId, queue, buf.length,
-						refSeqNb);
+						(String) header.get(JsonUtil.TAG_HEADER_REFSNDSN));
 				JsonUtil.jsonResponse(soap);
 			}
 		}
@@ -53,17 +54,13 @@ public class JSCallMessageListener extends AbstractBytesMessageListener
 		String replyMsgCd = (String) header.get(JsonUtil.TAG_HEADER_REPLYMSGCD);
 		boolean response = !StringX.nullity(replyToQ);
 		JsonUtil.jsonRequest(soap, SpringUtil.APPCODE, response);
-		if (!response)
-		{
-			log.info("replyToQ is empty");
-			return;
-		}
+		if (!response) return;
 
 		header.put(JsonUtil.TAG_HEADER_SN, uuid.format(uuid.uuid()));
 		String json = JsonUtil.obj2json(soap);
 		final byte[] buf = json.getBytes(Common.CHARSET_UTF8);
 		log.debug("response json:{}", json);
-		log.info("MQ JS response: {}, replyMsgCd:{}, corId:{},  len:{}", replyToQ, replyMsgCd,
+		log.info("MQ JS response to: {}, replyMsgCd:{}, corId:{},  len:{}", replyToQ, replyMsgCd,
 				msg.getJMSCorrelationID(), buf.length);
 		jms.send(replyToQ, (s) -> {
 			BytesMessage m = s.createBytesMessage();

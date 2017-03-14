@@ -501,11 +501,20 @@ public final class SpringUtil implements ResourceLoaderAware, ApplicationContext
 
 	public static File getDataDir() throws IOException
 	{
-		File f = DATA_DIR.startsWith("WEB-INF/")
-				? SYSTEM_UTIL.getResourceLoader().getResource(DATA_DIR).getFile()
-				: new File(SYSTEM_UTIL.getResourceLoader().getResource(DATA_DIR).getFile(), JVM);
-		if (!f.exists()) f.mkdirs();
-		return f;
+		try
+		{
+			File f = DATA_DIR.startsWith("WEB-INF/")
+					? SYSTEM_UTIL.getResourceLoader().getResource(DATA_DIR).getFile()
+					: new File(SYSTEM_UTIL.getResourceLoader().getResource(DATA_DIR).getFile(),
+							JVM);
+			if (!f.exists()) f.mkdirs();
+			return f;
+		}
+		catch (Exception e)
+		{
+			log.warn("cannot find data dir:" + DATA_DIR);
+		}
+		return new File(System.getProperty("java.io.tmpdir"));
 	}
 
 	// ------------ for json call-------------
